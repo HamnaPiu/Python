@@ -1,4 +1,4 @@
-from algo_base import ReplacementAlgorithm
+from Algo_base import ReplacementAlgorithm
 from collections import deque
 
 class FIFOAlgorithm(ReplacementAlgorithm):
