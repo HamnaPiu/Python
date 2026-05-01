@@ -1,4 +1,4 @@
-# MMU Simulator Configuration
+# config.txt
 RAM_KB = 32
 PAGE_BYTES = 2048
 TLB_SIZE = 4

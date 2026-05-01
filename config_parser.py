@@ -116,4 +116,4 @@ if __name__ == "__main__":
     # PRINT RESULTS
     config.print_config()
 
-    print("✅ CONFIG PARSER WORKS!")
+    print("CONFIG PARSER WORKS!")
