@@ -28,7 +28,7 @@ def parse_trace(filename, max_address=0xFFFFFFFF):
                     continue
 
                 is_write = False
-                oaddress_str = None
+                address_str = None
 
                 parts = line.split() #["R", "0x1000"]
 
@@ -45,10 +45,6 @@ def parse_trace(filename, max_address=0xFFFFFFFF):
                 else:
                     errors.append(f"LINE {line_num}: INVALID FORMAT - '{line}'")
                     continue
-
-                
-                
-                    address_str = address_str[2:]
 
                 try:
                     address = int(address_str, 16)
@@ -124,7 +120,7 @@ if __name__ == "__main__":
     print("\n")
     for acc in accesses[:5]:
         operation = "WRITE" if acc.write_flag else "READ"
-        print(f"LINE {acc.line_index:4}: {op} {hex(acc.addr)}")
+        print(f"LINE {acc.line_index:4}: {operation} {hex(acc.addr)}")
 
     stats = get_stats(accesses)
     print("\nSTATISTICS:\n")
