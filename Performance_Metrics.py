@@ -23,22 +23,22 @@ class PerformanceMetrics:
         
         if hit_type == 'TLB_HIT':
             self.tlb_hits += 1
-            self.total_simulated_time_ns += self.LATENCY_TLB[cite: 1]
+            self.total_simulated_time_ns += self.LATENCY_TLB
             
         elif hit_type == 'PT_HIT':
             self.pt_hits += 1
             # TLB Search (1ns) + RAM Access (100ns)[cite: 1]
-            self.total_simulated_time_ns += (self.LATENCY_TLB + self.LATENCY_RAM)[cite: 1]
+            self.total_simulated_time_ns += (self.LATENCY_TLB + self.LATENCY_RAM)
             
         elif hit_type == 'PAGE_FAULT':
             self.page_faults += 1
             # Lookups (101ns) + Disk Read (10ms)[cite: 1]
-            path_latency = self.LATENCY_TLB + self.LATENCY_RAM + self.LATENCY_DISK[cite: 1]
+            path_latency = self.LATENCY_TLB + self.LATENCY_RAM + self.LATENCY_DISK
             
             # If the evicted page was dirty, add another Disk Write penalty[cite: 1]
             if is_dirty_eviction:
                 self.dirty_writes += 1
-                path_latency += self.LATENCY_DISK[cite: 1]
+                path_latency += self.LATENCY_DISK
                 
             self.total_simulated_time_ns += path_latency
 
@@ -54,4 +54,4 @@ class PerformanceMetrics:
         print(f"Page Fault Rate:   {(self.page_faults/self.total_accesses)*100:.2f}%")
         print(f"Total Disk Writes: {self.dirty_writes}")
         print(f"Simulated Time:    {self.total_simulated_time_ns} ns")
-        print(f"Computed EAT:      {self.get_eat():.2f} ns")[cite: 1]
+        print(f"Computed EAT:      {self.get_eat():.2f} ns")
