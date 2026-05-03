@@ -10,16 +10,13 @@ class PageTableEntry:
 
 class PageTable:
     def __init__(self):
-        self.table = {}  # VPN -> PageTableEntry
+        self.table = {}
 
     def add_entry(self, vpn, frame):
         self.table[vpn] = PageTableEntry(frame=frame, valid=1, dirty=0)
 
-    # ========== ADD THIS METHOD ==========
     def get_entry(self, vpn):
-        """Return the PageTableEntry for VPN, or None if not exists."""
         return self.table.get(vpn)
-    # ========== END ADDED METHOD ==========
 
     def get_frame(self, vpn):
         entry = self.table.get(vpn)
@@ -59,26 +56,22 @@ class PageTable:
         return vpn in self.table
 
     def print_table(self):
-        print("\n--- PAGE TABLE CONTENTS ---")
+        print("\nPAGE TABLE CONTENTS")
         valid_entries = [(vpn, pte) for vpn, pte in self.table.items() if pte.valid == 1]
         if not valid_entries:
             print("(EMPTY)")
         else:
             print(f"{'VPN':<8} {'FRAME':<8} {'DIRTY':<8}")
-            print("-" * 30)
             for vpn, pte in sorted(valid_entries):
                 print(f"{vpn:<8} {pte.frame:<8} {pte.dirty:<8}")
-        print("----------------------------")
 
 
 if __name__ == "__main__":
-    print("=" * 50)
     print("TESTING PAGE TABLE")
-    print("=" * 50)
 
     pt = PageTable()
     pt.add_entry(1, 5)
     pt.add_entry(2, 3)
     print(f"get_entry(1): {pt.get_entry(1)}")
     print(f"get_frame(1): {pt.get_frame(1)}")
-    print("✅ PAGE TABLE READY")
+    print("PAGE TABLE READY")

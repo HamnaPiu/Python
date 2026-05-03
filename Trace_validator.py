@@ -1,14 +1,13 @@
 class AddressRead:
 
     def __init__(self, line_num, address, is_write, original_line):
-        self.line_index = line_num      # Line number in trace file
-        self.addr = address             # Virtual address (integer)
-        self.write_flag = is_write      # True = write, False = read
-        self.trace = original_line      # Raw line text
+        self.line_index = line_num
+        self.addr = address
+        self.write_flag = is_write
+        self.trace = original_line
 
     
 
-#Reads the trace file, validates each line, and returns a list of AddressRead objects.
 def parse_trace(filename, max_address=0xFFFFFFFF):
 
     accesses = []
@@ -30,7 +29,7 @@ def parse_trace(filename, max_address=0xFFFFFFFF):
                 is_write = False
                 address_str = None
 
-                parts = line.split() #["R", "0x1000"]
+                parts = line.split()
 
                 if len(parts) == 2:
                     
@@ -95,7 +94,7 @@ def get_stats(accesses):
 
     reads = 0
     for a in accesses:
-        if not a.write_flag:   # if it's a READ
+        if not a.write_flag:
             reads = reads + 1
 
     writes = len(accesses) - reads

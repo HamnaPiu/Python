@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from config_parser import parse_config, calculate_derived_values
 from Trace_validator import parse_trace
 from Address_Splitter import address_splitter
@@ -38,14 +36,12 @@ class MMU:
         else:
             raise ValueError(f"Unknown algorithm: {algorithm}")
         
-        print("=" * 70)
         print(f" MMU SIMULATOR INITIALIZED WITH {algorithm} ALGORITHM ")
-        print("=" * 70)
         print(f" PHYSICAL FRAMES AVAILABLE: {config.num_frames}")
         print(f" TLB ENTRIES: {config.tlb_size}")
         print(f" PAGE SIZE: {config.page_bytes} BYTES")
         print(f" RAM SIZE: {config.ram_kb} KB")
-        print("=" * 70 + "\n")
+        print("\n")
     
     def _build_future_map(self, trace_addresses):
         future_map = {}
@@ -150,9 +146,7 @@ class MMU:
     def print_stats(self):
         stats = self.get_stats()
         
-        print("\n" + "=" * 70)
         print(f" PERFORMANCE REPORT [{stats['algorithm']}] ")
-        print("=" * 70)
         
         print("\n[ ACCESS SUMMARY ]")
         print(f"   TOTAL ACCESSES:     {stats['total_accesses']}")
@@ -171,8 +165,6 @@ class MMU:
         print(f"   AVERAGE TIME:       {stats['avg_latency_ns']:.2f} NS")
         print(f"   EFFECTIVE ACCESS TIME (EAT): {stats['eat_ns']:.2f} NS")
         
-        print("\n" + "-" * 70)
-        
         self.page_table.print_table()
         
         total_tlb = self.tlb.hits + self.tlb.misses
@@ -181,24 +173,23 @@ class MMU:
         print(f"   HITS: {self.tlb.hits}  |  MISSES: {self.tlb.misses}  |  HIT RATE: {tlb_rate:.2f}%")
         
         self.frame_manager.print_status()
-        print("=" * 70 + "\n")
+        print("\n")
 
 
 def main():
-    print("\n" + "=" * 70)
     print("   WELCOME TO VIRTUAL MEMORY & TLB SIMULATOR")
-    print("=" * 70 + "\n")
+    print("\n")
     
     trace_file = input(" ENTER TRACE FILE PATH (default: Trace_validator.txt): ").strip()
     if not trace_file:
         trace_file = "Trace_validator.txt"
     
-    print("\n[1] LOADING CONFIGURATION...")
+    print("\n[1] LOADING CONFIGURATION")
     config = parse_config("config.txt")
     config = calculate_derived_values(config)
     config.print_config()
     
-    print("\n[2] LOADING TRACE FILE...")
+    print("\n[2] LOADING TRACE FILE")
     accesses = parse_trace(trace_file)
     
     if not accesses:
@@ -208,14 +199,11 @@ def main():
     all_addresses = [acc.addr for acc in accesses]
     
     while True:
-        print("\n" + "-" * 70)
         print("   REPLACEMENT ALGORITHM MENU")
-        print("-" * 70)
         print("   1. FIFO (First-In-First-Out)")
         print("   2. LRU (Least Recently Used)")
         print("   3. OPT (Optimal - Clairvoyant)")
         print("   0. EXIT")
-        print("-" * 70)
         
         try:
             choice = int(input("\n ENTER YOUR CHOICE (0-3): "))
@@ -237,19 +225,18 @@ def main():
             print(" ERROR: INVALID CHOICE. PLEASE ENTER 0-3.")
             continue
         
-        print(f"\n[3] CREATING FRAME MANAGER...")
+        print(f"\n[3] CREATING FRAME MANAGER")
         fm = FrameManager(config.num_frames)
         fm.print_status()
         
-        print(f"\n[4] INITIALIZING MMU WITH {algorithm} ALGORITHM...")
+        print(f"\n[4] INITIALIZING MMU WITH {algorithm} ALGORITHM")
         
         if algorithm == "OPT":
             mmu = MMU(config, fm, algorithm=algorithm, trace_addresses=all_addresses)
         else:
             mmu = MMU(config, fm, algorithm=algorithm)
         
-        print(f"\n[5] PROCESSING {len(accesses)} MEMORY ACCESSES WITH {algorithm}...")
-        print("-" * 70 + "\n")
+        print(f"\n[5] PROCESSING {len(accesses)} MEMORY ACCESSES WITH {algorithm}\n")
         
         for i, acc in enumerate(accesses):
             print(f" ACCESS [{i+1:03d}/{len(accesses)}] : {acc}")
