@@ -1,45 +1,84 @@
 class PageTableEntry:
-    def __init__(self, frame_num):
-        self.frame_num = frame_num
-        self.valid = 1
-        self.dirty = 0
+    def __init__(self, frame=-1, valid=0, dirty=0):
+        self.frame = frame
+        self.valid = valid
+        self.dirty = dirty
 
-    def mark_dirty(self):
-        self.dirty = 1
+    def __repr__(self):
+        return f"PTE(frame={self.frame}, valid={self.valid}, dirty={self.dirty})"
 
 
 class PageTable:
     def __init__(self):
-        self.entries = {}   # vpn -> PageTableEntry
+        self.table = {}  # VPN -> PageTableEntry
 
-    def lookup(self, vpn):
-        """Return PageTableEntry if valid, else None."""
-        pte = self.entries.get(vpn)
-        return pte if pte and pte.valid else None
+    def add_entry(self, vpn, frame):
+        self.table[vpn] = PageTableEntry(frame=frame, valid=1, dirty=0)
 
-    def add(self, vpn, frame_num):
-        """Add a new mapping (after page fault)."""
-        self.entries[vpn] = PageTableEntry(frame_num)
+    # ========== ADD THIS METHOD ==========
+    def get_entry(self, vpn):
+        """Return the PageTableEntry for VPN, or None if not exists."""
+        return self.table.get(vpn)
+    # ========== END ADDED METHOD ==========
 
-    def remove(self, vpn):
-        """Remove mapping (on eviction)."""
-        self.entries.pop(vpn, None)
+    def get_frame(self, vpn):
+        entry = self.table.get(vpn)
+        if entry and entry.valid:
+            return entry.frame
+        return -1
+
+    def is_valid(self, vpn):
+        entry = self.table.get(vpn)
+        return entry is not None and entry.valid == 1
 
     def mark_dirty(self, vpn):
-        """Mark a page as dirty (on write operation)."""
-        pte = self.lookup(vpn)
-        if pte:
-            pte.mark_dirty()
+        entry = self.table.get(vpn)
+        if entry:
+            entry.dirty = 1
+
+    def is_dirty(self, vpn):
+        entry = self.table.get(vpn)
+        return entry is not None and entry.dirty == 1
+
+    def invalidate(self, vpn):
+        entry = self.table.get(vpn)
+        if entry:
+            entry.valid = 0
+            entry.frame = -1
+
+    def set_frame(self, vpn, frame):
+        entry = self.table.get(vpn)
+        if entry:
+            entry.frame = frame
+            entry.valid = 1
+            entry.dirty = 0
+        else:
+            self.add_entry(vpn, frame)
+
+    def contains(self, vpn):
+        return vpn in self.table
+
+    def print_table(self):
+        print("\n--- PAGE TABLE CONTENTS ---")
+        valid_entries = [(vpn, pte) for vpn, pte in self.table.items() if pte.valid == 1]
+        if not valid_entries:
+            print("(EMPTY)")
+        else:
+            print(f"{'VPN':<8} {'FRAME':<8} {'DIRTY':<8}")
+            print("-" * 30)
+            for vpn, pte in sorted(valid_entries):
+                print(f"{vpn:<8} {pte.frame:<8} {pte.dirty:<8}")
+        print("----------------------------")
 
 
-# Self test
 if __name__ == "__main__":
+    print("=" * 50)
+    print("TESTING PAGE TABLE")
+    print("=" * 50)
+
     pt = PageTable()
-    pt.add(0x123, 5)
-    pte = pt.lookup(0x123)
-    print(f"LOOKUP 0x123: FRAME={pte.frame_num} VALID={pte.valid} DIRTY={pte.dirty}")
-    pt.mark_dirty(0x123)
-    print(f"AFTER DIRTY: FRAME={pte.frame_num} DIRTY={pte.dirty}")
-    pt.remove(0x123)
-    print(f"AFTER REMOVE: {pt.lookup(0x123)}")
-    print("✅ PAGE TABLE READY")  
+    pt.add_entry(1, 5)
+    pt.add_entry(2, 3)
+    print(f"get_entry(1): {pt.get_entry(1)}")
+    print(f"get_frame(1): {pt.get_frame(1)}")
+    print("✅ PAGE TABLE READY")

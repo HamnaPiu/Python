@@ -6,15 +6,15 @@ class Config:
         self.ram_kb = 0
         self.page_bytes = 0
         self.tlb_size = 0
-        self.tlb_latency_ps = 0      # picoseconds
+        self.tlb_latency_ns = 0      # nanoseconds (changed from PS)
         self.ram_latency_ns = 0      # nanoseconds
-        self.disk_latency_ms = 0     # milliseconds
+        self.disk_latency_ns = 0     # nanoseconds (changed from MS)
 
         # CALCULATED VALUES
         self.ram_bytes = 0
         self.num_frames = 0
         self.offset_bits = 0          # SHIFT value
-        self.offset_mask_value = 0          # page_bytes - 1
+        self.offset_mask_value = 0    # page_bytes - 1
 
     def print_config(self):
         print("\n")
@@ -26,14 +26,14 @@ class Config:
         print(f"OFFSET BITS: {self.offset_bits}  ← SHIFT VALUE")
         print(f"OFFSET MASK: 0x{self.offset_mask_value:X}")
         print(f"TLB SIZE: {self.tlb_size}")
-        print(f"TLB LATENCY: {self.tlb_latency_ps} PS")
+        print(f"TLB LATENCY: {self.tlb_latency_ns} NS")
         print(f"RAM LATENCY: {self.ram_latency_ns} NS")
-        print(f"DISK LATENCY: {self.disk_latency_ms} MS")
+        print(f"DISK LATENCY: {self.disk_latency_ns} NS")
         print("\n")
 
 
 def parse_config(filename):
-    config = Config()   # ← FIXED: Use Config, not SystemConfig
+    config = Config()
 
     try:
         with open(filename, 'r') as file_read:
@@ -57,19 +57,19 @@ def parse_config(filename):
                     print(f"WARNING: COULD NOT PARSE '{value}' AS INTEGER")
                     continue
 
-                # ASSIGN VALUES (MATCH YOUR CONFIG.TXT NAMES)
+                # ASSIGN VALUES (MATCH YOUR CONFIG.TXT)
                 if name == 'RAM_KB':
                     config.ram_kb = value
                 elif name == 'PAGE_BYTES':
                     config.page_bytes = value
                 elif name == 'TLB_SIZE':
                     config.tlb_size = value
-                elif name == 'TLB_LATENCY_PS':
-                    config.tlb_latency_ps = value
+                elif name == 'TLB_LATENCY_NS':      # Changed from PS to NS
+                    config.tlb_latency_ns = value
                 elif name == 'RAM_LATENCY_NS':
                     config.ram_latency_ns = value
-                elif name == 'DISK_LATENCY_MS':
-                    config.disk_latency_ms = value
+                elif name == 'DISK_LATENCY_NS':     # Changed from MS to NS
+                    config.disk_latency_ns = value
                 else:
                     print(f"WARNING: UNKNOWN CONFIG PARAMETER '{name}'")
 
@@ -108,12 +108,7 @@ def calculate_derived_values(config):
 
 if __name__ == "__main__":
     print("TESTING CONFIG PARSER...")
-
-    # PARSE CONFIG
     config = parse_config("config.txt")
     config = calculate_derived_values(config)
-
-    # PRINT RESULTS
     config.print_config()
-
     print("CONFIG PARSER WORKS!")
