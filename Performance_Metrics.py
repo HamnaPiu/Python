@@ -10,7 +10,7 @@ class PerformanceMetrics:
         # Latency Constants (in ns)
         self.LATENCY_TLB = 1
         self.LATENCY_RAM = 100
-        self.LATENCY_DISK = 10_000_000  # 10ms
+        self.LATENCY_DISK = 10000000  # 10ms
         
         self.total_simulated_time_ns = 0
 
